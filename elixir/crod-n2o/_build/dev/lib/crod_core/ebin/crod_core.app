@@ -1,0 +1,11 @@
+{application,crod_core,
+             [{modules,['Elixir.CROD.Core.Application',
+                        'Elixir.CROD.Core.MessageBus',
+                        'Elixir.CROD.Core.Protocol',
+                        'Elixir.CROD.Core.Router']},
+              {optional_applications,[]},
+              {applications,[kernel,stdlib,elixir,logger,n2o,cowboy,jason]},
+              {description,"crod_core"},
+              {registered,[]},
+              {vsn,"0.1.0"},
+              {mod,{'Elixir.CROD.Core.Application',[]}}]}.

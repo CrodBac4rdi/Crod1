@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  crod-layered-memory:
+    build: .
+    container_name: crod-layered-memory
+    restart: unless-stopped
+    environment:
+      - CROD_LAYERED_DB_PATH=/data/layered-atomic.db
+      - NODE_ENV=production
+    volumes:
+      - ./data:/data
+      - ./logs:/logs
+    networks:
+      - crod-network
+    healthcheck:
+      test: ["CMD", "sqlite3", "/data/layered-atomic.db", "SELECT COUNT(*) FROM base_atoms"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+
+  # HTTP wrapper for MCP server (for health checks and monitoring)
+  crod-memory-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: crod-memory-api
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - MCP_COMMAND=/app/dist/index-layered.js
+      - DB_PATH=/data/layered-atomic.db
+    volumes:
+      - ./data:/data:ro
+    networks:
+      - crod-network
+    depends_on:
+      - crod-layered-memory
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  default:
+    name: docker_default
+    external: true

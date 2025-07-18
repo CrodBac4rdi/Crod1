@@ -1,0 +1,206 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: crod-postgres
+    environment:
+      POSTGRES_USER: crod
+      POSTGRES_PASSWORD: crod_secure_pass
+      POSTGRES_DB: crod_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crod"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crod-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: crod-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - crod-network
+
+  # NATS Message Bus
+  nats:
+    image: nats:latest
+    container_name: crod-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["-js", "-m", "8222"]
+    networks:
+      - crod-network
+
+  # Elixir Master Brain
+  crod:
+    build:
+      context: ../elixir/crod-complete
+      dockerfile: Dockerfile
+    container_name: crod-elixir-brain
+    ports:
+      - "4000:4000"
+    environment:
+      MIX_ENV: dev
+      DATABASE_URL: "ecto://crod:crod_secure_pass@postgres/crod_dev"
+      REDIS_URL: "redis://redis:6379"
+      NATS_URL: "nats://nats:4222"
+      PHX_HOST: localhost
+      SECRET_KEY_BASE: "your_very_long_secret_key_base_at_least_64_characters_long_for_production_use"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      nats:
+        condition: service_started
+    volumes:
+      - ../elixir/crod-complete:/app
+      - /app/_build
+      - /app/deps
+    networks:
+      - crod-network
+
+  # JavaScript Brain
+  js-brain:
+    image: node:18-alpine
+    container_name: crod-js-brain
+    working_dir: /app
+    volumes:
+      - ../javascript:/app
+      - /app/node_modules
+    command: sh -c "npm install && node core/crod-brain.js"
+    ports:
+      - "8888:8888"
+    environment:
+      NODE_ENV: development
+      NATS_URL: "nats://nats:4222"
+      REDIS_URL: "redis://redis:6379"
+    depends_on:
+      - nats
+      - redis
+    networks:
+      - crod-network
+
+  # Python Brain
+  python-brain:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.python
+    container_name: crod-python-brain
+    ports:
+      - "8001:8001"
+      - "9001:9001"  # Prometheus metrics
+    environment:
+      PYTHONPATH: /app
+      NATS_URL: "nats://nats:4222"
+      REDIS_URL: "redis://redis:6379"
+      BRAIN_PORT: "8001"
+    depends_on:
+      - nats
+      - redis
+    volumes:
+      - ../python:/app
+    networks:
+      - crod-network
+
+  # Go Brain
+  go-brain:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.go
+    container_name: crod-go-brain
+    ports:
+      - "8002:8002"
+    environment:
+      NATS_URL: "nats://nats:4222"
+      REDIS_URL: "redis://redis:6379"
+      BRAIN_PORT: "8002"
+    depends_on:
+      - nats
+      - redis
+    volumes:
+      - ../go:/app
+    networks:
+      - crod-network
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: crod-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - crod-network
+
+  # Grafana Dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: crod-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - crod-network
+
+  # Jaeger Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: crod-jaeger
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
+    networks:
+      - crod-network
+
+  # Task Master AI MCP Server
+  task-master:
+    image: node:18-alpine
+    container_name: crod-task-master
+    working_dir: /app
+    command: sh -c "npm install -g task-master-ai && task-master-mcp"
+    environment:
+      TASK_MASTER_MODE: mcp
+      MCP_MODE: server
+    networks:
+      - crod-network
+    volumes:
+      - task-master-data:/app/data
+
+volumes:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+  task-master-data:
+
+networks:
+  crod-network:
+    driver: bridge

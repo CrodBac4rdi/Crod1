@@ -1,0 +1,10 @@
+{application,crod_ui,
+             [{modules,['Elixir.CROD.UI.Nitro.Dashboard']},
+              {optional_applications,[]},
+              {applications,[kernel,stdlib,elixir,logger,crod_core,phoenix,
+                             phoenix_html,phoenix_live_view,
+                             phoenix_live_dashboard,nitro,n2o]},
+              {description,"crod_ui"},
+              {registered,[]},
+              {vsn,"0.1.0"},
+              {mod,{'Elixir.CROD.UI.Application',[]}}]}.

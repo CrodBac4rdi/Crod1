@@ -1,0 +1,19 @@
+{
+  "name": "crod-minimal-mcp",
+  "version": "1.0.0",
+  "description": "Minimal CROD MCP Server",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "crod-minimal": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@supabase/supabase-js": "^2.47.10",
+    "ws": "^8.18.0",
+    "dotenv": "^16.4.7"
+  }
+}

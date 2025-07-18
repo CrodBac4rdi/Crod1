@@ -1,0 +1,10 @@
+FROM alpine:latest
+
+RUN apk add --no-cache curl bash
+
+WORKDIR /app
+
+COPY crod-monitor.sh .
+RUN chmod +x crod-monitor.sh
+
+CMD ["./crod-monitor.sh"]

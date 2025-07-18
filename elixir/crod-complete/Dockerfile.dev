@@ -1,0 +1,51 @@
+FROM elixir:1.17-alpine
+
+# Install system dependencies including inotify-tools for hot reload
+RUN apk add --no-cache \
+    build-base \
+    git \
+    nodejs \
+    npm \
+    curl \
+    postgresql-client \
+    inotify-tools \
+    bash
+
+# Create app directory
+WORKDIR /app
+
+# Install hex and rebar
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
+# Set development environment
+ENV MIX_ENV=dev
+
+# Copy mix files first for better caching
+COPY mix.exs mix.lock ./
+
+# Install dependencies
+RUN mix deps.get
+
+# Copy the rest of the application
+COPY . .
+
+# Install node dependencies if assets exist
+RUN if [ -d "assets" ]; then \
+        cd assets && npm install && cd ..; \
+    fi
+
+# Create database and run migrations (will be handled by startup script)
+# Expose port
+EXPOSE 4000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+    CMD curl -f http://localhost:4000/health || exit 1
+
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Start with hot reload
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

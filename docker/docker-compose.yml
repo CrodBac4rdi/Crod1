@@ -1,0 +1,187 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: crod_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  crod:
+    build: 
+      context: ../elixir/crod-complete
+      dockerfile: Dockerfile.dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      MIX_ENV: dev
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/crod_dev
+      SECRET_KEY_BASE: "your-secret-key-base-at-least-64-chars-long-abcdefghijklmnopqrstuvwxyz0123456789"
+      PHX_HOST: localhost
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    volumes:
+      - ../elixir/crod-complete:/app:cached
+      - elixir_build:/app/_build
+      - elixir_deps:/app/deps
+      - elixir_node_modules:/app/assets/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  crod-js:
+    build:
+      context: ../javascript
+      dockerfile: ../docker/Dockerfile.js
+    environment:
+      NODE_ENV: development
+    ports:
+      - "8889:8888"
+    volumes:
+      - ../javascript:/app
+      - /app/node_modules
+    command: >
+      sh -c "
+        cd /app &&
+        npm install &&
+        node core/crod-brain.js
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8890/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Claude-CROD Bridge (Go)
+  bridge:
+    build:
+      context: ../go-bridge
+      dockerfile: Dockerfile
+    depends_on:
+      crod:
+        condition: service_healthy
+    environment:
+      CROD_URL: "http://crod:4000/api/claude/process"
+      PORT: "9090"
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9090/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Streamlit Neural Dashboard
+  streamlit:
+    build:
+      context: ../streamlit
+      dockerfile: Dockerfile
+    depends_on:
+      crod:
+        condition: service_healthy
+    environment:
+      CROD_API_BASE: "http://crod:4000/api"
+    ports:
+      - "8501:8501"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # FastAPI ML/AI Service - Commented out (directory doesn't exist)
+  # fastapi:
+  #   build:
+  #     context: ../fastapi
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     crod:
+  #       condition: service_healthy
+  #   environment:
+  #     CROD_API_BASE: "http://crod:4000/api"
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - fastapi_data:/app/data
+  #     - fastapi_models:/app/models
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Javalin High-Performance API
+  javalin:
+    build:
+      context: ../javalin
+      dockerfile: Dockerfile
+    depends_on:
+      crod:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      CROD_API_BASE: "http://crod:4000/api"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+    ports:
+      - "7000:7000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Angular Enterprise Admin Interface
+  angular:
+    build:
+      context: ../angular
+      dockerfile: Dockerfile
+    depends_on:
+      javalin:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "4200:4200"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4200/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+  fastapi_data:
+  fastapi_models:
+  redis_data:
+  elixir_build:
+  elixir_deps:
+  elixir_node_modules:

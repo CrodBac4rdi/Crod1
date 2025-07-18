@@ -1,0 +1,108 @@
+# docker-compose.override.yml - Local development overrides
+# This file is automatically loaded by docker-compose and overrides settings in docker-compose.yml
+
+services:
+  # PostgreSQL with persistent data and logging
+  postgres:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_LOG_STATEMENT: all
+      POSTGRES_LOG_DURATION: on
+    command: 
+      - "postgres"
+      - "-c"
+      - "log_statement=all"
+      - "-c"
+      - "log_duration=on"
+
+  # Elixir/Phoenix with hot reload
+  crod:
+    build:
+      context: ../elixir/crod-complete
+      dockerfile: Dockerfile.dev
+      args:
+        - MIX_ENV=dev
+    volumes:
+      - ../elixir/crod-complete:/app:cached
+      - elixir_build:/app/_build
+      - elixir_deps:/app/deps
+      - elixir_node_modules:/app/assets/node_modules
+    environment:
+      MIX_ENV: dev
+      POOL_SIZE: 10
+      ENABLE_DEBUG_LOGS: "true"
+    stdin_open: true
+    tty: true
+
+  # JavaScript Brain with hot reload
+  crod-js:
+    volumes:
+      - ../javascript:/app:cached
+      - js_node_modules:/app/node_modules
+    environment:
+      NODE_ENV: development
+      DEBUG: "crod:*"
+    command: >
+      sh -c "
+        npm install &&
+        npm run dev || node core/crod-brain.js
+      "
+
+  # Streamlit with auto-reload
+  streamlit:
+    volumes:
+      - ../streamlit:/app:cached
+    environment:
+      STREAMLIT_SERVER_RUN_ON_SAVE: "true"
+      STREAMLIT_THEME_BASE: "dark"
+      PYTHONUNBUFFERED: 1
+
+  # FastAPI with auto-reload
+  fastapi:
+    volumes:
+      - ../fastapi:/app:cached
+      - fastapi_data:/app/data
+      - fastapi_models:/app/models
+    environment:
+      PYTHONUNBUFFERED: 1
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # Angular with hot reload
+  angular:
+    volumes:
+      - ../angular:/app:cached
+      - angular_node_modules:/app/node_modules
+    environment:
+      NODE_ENV: development
+    command: >
+      sh -c "
+        npm install &&
+        npm start -- --host 0.0.0.0 --poll=2000
+      "
+
+  # Javalin development mode
+  javalin:
+    volumes:
+      - ../javalin:/app:cached
+      - javalin_gradle:/root/.gradle
+    environment:
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      DEBUG: "true"
+
+  # Redis with persistence and logging
+  redis:
+    command: redis-server --appendonly yes --loglevel debug
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+# Additional volumes for development
+volumes:
+  elixir_build:
+  elixir_deps:
+  elixir_node_modules:
+  js_node_modules:
+  angular_node_modules:
+  javalin_gradle:

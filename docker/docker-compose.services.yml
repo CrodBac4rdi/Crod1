@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # JavaScript Brain - Already running
+  js-brain:
+    image: node:18-alpine
+    container_name: crod-js-brain
+    working_dir: /app
+    volumes:
+      - ../javascript:/app
+    command: node core/crod-brain.js
+    ports:
+      - "8888:8888"
+    environment:
+      NODE_ENV: development
+    networks:
+      - crod-network
+    restart: unless-stopped
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: crod-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - crod-network
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: crod-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    networks:
+      - crod-network
+
+networks:
+  crod-network:
+    external: true
+    name: docker_default

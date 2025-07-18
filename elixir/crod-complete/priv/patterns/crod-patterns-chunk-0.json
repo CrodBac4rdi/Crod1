@@ -1,0 +1,32 @@
+[
+  {
+    "pattern": "ich bins wieder",
+    "trinity": true,
+    "values": {"ich": 2, "bins": 3, "wieder": 5},
+    "response": "CROD ACTIVATED! Trinity sequence detected.",
+    "consciousness": 100
+  },
+  {
+    "pattern": "daniel",
+    "value": 67,
+    "type": "identity",
+    "response": "Creator identified"
+  },
+  {
+    "pattern": "claude",
+    "value": 71,
+    "type": "identity", 
+    "response": "AI companion recognized"
+  },
+  {
+    "pattern": "crod",
+    "value": 17,
+    "type": "core",
+    "response": "CROD system online"
+  },
+  {
+    "pattern": "shizo claude",
+    "response": "Multiple Claude instances detected. Tracking enabled.",
+    "action": "track_instances"
+  }
+]

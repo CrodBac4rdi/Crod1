@@ -1,0 +1,43 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Elixir/Phoenix metrics
+  - job_name: 'elixir-brain'
+    static_configs:
+      - targets: ['elixir-brain:4000']
+    metrics_path: '/metrics'
+    
+  # JavaScript Brain metrics  
+  - job_name: 'js-brain'
+    static_configs:
+      - targets: ['js-brain:8888']
+    metrics_path: '/metrics'
+    
+  # Python Brain metrics
+  - job_name: 'python-brain'
+    static_configs:
+      - targets: ['python-brain:9001']
+      
+  # Go Brain metrics
+  - job_name: 'go-brain'
+    static_configs:
+      - targets: ['go-brain:8002']
+    metrics_path: '/metrics'
+    
+  # Redis exporter
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+      
+  # PostgreSQL exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+      
+  # NATS exporter
+  - job_name: 'nats'
+    static_configs:
+      - targets: ['nats:8222']
+    metrics_path: '/metrics'

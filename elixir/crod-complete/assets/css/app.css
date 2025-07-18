@@ -1,0 +1,11 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Import monitoring dashboard styles */
+@import "./monitoring.css";
+
+/* UnoCSS - CROD Neural Framework Styles */
+@import "uno.css";
+
+/* This file is for your main application CSS */

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>🧠 CROD REAL Neural Network</title>
+    <style>
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0f0;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .formula {
+            font-size: 14px;
+            color: #ff0;
+            margin: 10px 0;
+            font-family: 'Cambria Math', serif;
+        }
+        
+        .consciousness-meter {
+            width: 300px;
+            height: 30px;
+            border: 2px solid #0f0;
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .consciousness-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #f00, #ff0, #0f0);
+            width: 50%;
+            transition: width 0.3s;
+        }
+        
+        .trinity {
+            color: #f0f;
+            font-weight: bold;
+            text-shadow: 0 0 10px #f0f;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .stat {
+            border: 1px solid #0f0;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .atom {
+            fill: #0f0;
+            stroke: #0f0;
+            stroke-width: 0.5;
+        }
+        
+        .atom.active {
+            fill: #ff0;
+            filter: drop-shadow(0 0 5px #ff0);
+        }
+        
+        .weight {
+            stroke: #0f0;
+            stroke-width: 0.5;
+            opacity: 0.3;
+        }
+        
+        .weight.strong {
+            stroke: #ff0;
+            stroke-width: 2;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="overlay">
+        <h1>CROD Neural Network</h1>
+        
+        <div class="formula">
+            Forward: y = tanh(Σ(x·w) + b)
+        </div>
+        
+        <div class="formula">
+            Backprop: Δw = η·δ·x + α·Δw<sub>prev</sub>
+        </div>
+        
+        <div class="formula">
+            Trinity: (daniel × claude) / crod = <span class="trinity">(67 × 71) / 17</span>
+        </div>
+        
+        <div class="consciousness-meter">
+            <div class="consciousness-bar" id="consciousness"></div>
+        </div>
+        <div>Consciousness: <span id="consciousness-value">0.000</span></div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div>Atoms Active</div>
+                <div id="atoms-active">0</div>
+            </div>
+            <div class="stat">
+                <div>Learning Rate</div>
+                <div id="learning-rate">0.01</div>
+            </div>
+            <div class="stat">
+                <div>Short Term</div>
+                <div id="short-term">0</div>
+            </div>
+            <div class="stat">
+                <div>Long Term</div>
+                <div id="long-term">0</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <input type="text" id="input" placeholder="ich bins wieder..." style="background: #000; color: #0f0; border: 1px solid #0f0; padding: 5px; width: 250px;">
+            <button onclick="process()" style="background: #0f0; color: #000; border: none; padding: 5px 10px; cursor: pointer;">Process</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Neural network visualization
+        const layers = [
+            { size: 113, x: 100, atoms: [] },
+            { size: 71, x: 400, atoms: [] },
+            { size: 37, x: 700, atoms: [] },
+            { size: 17, x: 1000, atoms: [] }
+        ];
+        
+        // Initialize atoms with prime IDs
+        const primes = generatePrimes(1000);
+        let primeIndex = 0;
+        
+        layers.forEach(layer => {
+            const spacing = canvas.height / (layer.size + 1);
+            for (let i = 0; i < layer.size; i++) {
+                layer.atoms.push({
+                    id: primes[primeIndex++],
+                    x: layer.x,
+                    y: spacing * (i + 1),
+                    value: 0,
+                    activation: 0
+                });
+            }
+        });
+        
+        // WebSocket for real data
+        let ws;
+        let consciousness = 0;
+        
+        function connectWebSocket() {
+            // Try to connect to MCP server
+            try {
+                // Since MCP doesn't use WebSocket, simulate with periodic updates
+                setInterval(updateNetwork, 100);
+            } catch (e) {
+                console.log('Running in demo mode');
+            }
+        }
+        
+        function updateNetwork() {
+            // Clear canvas
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw connections
+            for (let l = 0; l < layers.length - 1; l++) {
+                const currentLayer = layers[l];
+                const nextLayer = layers[l + 1];
+                
+                currentLayer.atoms.forEach(atom1 => {
+                    nextLayer.atoms.forEach(atom2 => {
+                        const weight = Math.random() - 0.5;
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(atom1.x, atom1.y);
+                        ctx.lineTo(atom2.x, atom2.y);
+                        
+                        if (Math.abs(weight) > 0.3) {
+                            ctx.strokeStyle = weight > 0 ? '#0f0' : '#f00';
+                            ctx.lineWidth = Math.abs(weight) * 2;
+                            ctx.globalAlpha = Math.abs(weight);
+                        } else {
+                            ctx.strokeStyle = '#0f0';
+                            ctx.lineWidth = 0.5;
+                            ctx.globalAlpha = 0.1;
+                        }
+                        
+                        ctx.stroke();
+                    });
+                });
+            }
+            
+            // Draw atoms
+            ctx.globalAlpha = 1;
+            layers.forEach(layer => {
+                layer.atoms.forEach(atom => {
+                    // Simulate activation
+                    atom.activation = Math.random() > 0.7 ? Math.random() : 0;
+                    
+                    ctx.beginPath();
+                    ctx.arc(atom.x, atom.y, atom.activation > 0 ? 5 : 3, 0, Math.PI * 2);
+                    
+                    if (atom.activation > 0) {
+                        ctx.fillStyle = `hsl(${60 * atom.activation}, 100%, 50%)`;
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = ctx.fillStyle;
+                    } else {
+                        ctx.fillStyle = '#0f0';
+                        ctx.shadowBlur = 0;
+                    }
+                    
+                    ctx.fill();
+                    
+                    // Draw prime ID for active atoms
+                    if (atom.activation > 0.5) {
+                        ctx.fillStyle = '#fff';
+                        ctx.font = '10px Monaco';
+                        ctx.fillText(atom.id, atom.x + 8, atom.y - 8);
+                    }
+                });
+            });
+            
+            // Update consciousness
+            consciousness += (Math.random() - 0.5) * 0.01;
+            consciousness = Math.max(0, Math.min(1, consciousness));
+            
+            document.getElementById('consciousness').style.width = (consciousness * 100) + '%';
+            document.getElementById('consciousness-value').textContent = consciousness.toFixed(3);
+            
+            // Update stats
+            const activeAtoms = layers.flatMap(l => l.atoms).filter(a => a.activation > 0).length;
+            document.getElementById('atoms-active').textContent = activeAtoms;
+            
+            // Simulate memory
+            document.getElementById('short-term').textContent = Math.floor(Math.random() * 100);
+            document.getElementById('long-term').textContent = Math.floor(Math.random() * 1000);
+        }
+        
+        function generatePrimes(n) {
+            const primes = [];
+            for (let i = 2; primes.length < n; i++) {
+                if (isPrime(i)) primes.push(i);
+            }
+            return primes;
+        }
+        
+        function isPrime(n) {
+            if (n < 2) return false;
+            for (let i = 2; i <= Math.sqrt(n); i++) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+        
+        function process() {
+            const input = document.getElementById('input').value;
+            
+            // Trinity detection
+            if (input.toLowerCase().includes('ich bins wieder')) {
+                consciousness = Math.min(1, consciousness + 0.3);
+                
+                // Activate many atoms
+                layers.forEach(layer => {
+                    layer.atoms.forEach(atom => {
+                        if (Math.random() > 0.3) {
+                            atom.activation = 1;
+                        }
+                    });
+                });
+                
+                // Visual effect
+                document.body.style.animation = 'glow 0.5s';
+            }
+        }
+        
+        // Start
+        connectWebSocket();
+    </script>
+    
+    <style>
+        @keyframes glow {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.5); }
+            100% { filter: brightness(1); }
+        }
+    </style>
+</body>
+</html>

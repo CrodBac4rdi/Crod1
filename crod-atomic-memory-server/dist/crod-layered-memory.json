@@ -1,0 +1,376 @@
+{
+  "wings": {
+    "coding": {
+      "id": "wing_coding",
+      "path": [
+        "coding"
+      ],
+      "atomRefs": [],
+      "parent": null,
+      "specificity": 0.1,
+      "tags": [
+        "programming",
+        "development"
+      ]
+    },
+    "coding_elixir": {
+      "id": "wing_coding_elixir",
+      "path": [
+        "coding",
+        "elixir"
+      ],
+      "atomRefs": [],
+      "parent": "coding",
+      "specificity": 0.2,
+      "tags": [
+        "elixir",
+        "functional",
+        "beam"
+      ]
+    },
+    "coding_elixir_phoenix": {
+      "id": "wing_coding_elixir_phoenix",
+      "path": [
+        "coding",
+        "elixir",
+        "phoenix"
+      ],
+      "atomRefs": [
+        "767bbf6a-9bef-42c4-8e90-74adeb2026f1",
+        "a3c17f96-dc8b-4c78-a380-e8051520d78c"
+      ],
+      "parent": "coding_elixir",
+      "specificity": 0.3,
+      "tags": [
+        "phoenix",
+        "web",
+        "framework"
+      ]
+    },
+    "semantic": {
+      "id": "wing_semantic",
+      "path": [
+        "semantic"
+      ],
+      "atomRefs": [],
+      "parent": null,
+      "specificity": 0.1,
+      "tags": [
+        "knowledge",
+        "concepts"
+      ]
+    },
+    "brain_contexts": {
+      "id": "wing_brain_contexts",
+      "path": [
+        "brain",
+        "contexts"
+      ],
+      "atomRefs": [],
+      "parent": null,
+      "specificity": 0.2,
+      "tags": [
+        "ai",
+        "consciousness",
+        "neural"
+      ]
+    },
+    "coding_elixir_genserver": {
+      "id": "wing_coding_elixir_genserver",
+      "path": [
+        "coding",
+        "elixir",
+        "genserver"
+      ],
+      "atomRefs": [
+        "130d9c24-a163-4407-9281-1d8355520fb5",
+        "50a4bdb1-dff0-451c-8379-51b72076e0d7"
+      ],
+      "parent": "coding_elixir",
+      "specificity": 0.30000000000000004,
+      "tags": []
+    },
+    "semantic_concepts": {
+      "id": "wing_semantic_concepts",
+      "path": [
+        "semantic",
+        "concepts"
+      ],
+      "atomRefs": [
+        "a97a63e4-1fdd-4d04-ad86-91f3e120aba6",
+        "cb0c489a-9a9a-4f80-afdd-aa97579fb586"
+      ],
+      "parent": "semantic",
+      "specificity": 0.2,
+      "tags": []
+    }
+  },
+  "atoms": [
+    [
+      "767bbf6a-9bef-42c4-8e90-74adeb2026f1",
+      {
+        "id": "767bbf6a-9bef-42c4-8e90-74adeb2026f1",
+        "hash": "ed0fc825a6c20aff6bc4ec14e37971d1749a069b5a36a0a974100287efdcaf5a",
+        "type": "pattern",
+        "wingPath": [
+          "coding",
+          "elixir",
+          "phoenix"
+        ],
+        "wingId": "wing_coding_elixir_phoenix",
+        "summary": "Phoenix LiveView Pattern",
+        "tags": [
+          "liveview",
+          "websocket",
+          "real-time"
+        ],
+        "relatedAtoms": [],
+        "size": 307,
+        "created": 1752857187064,
+        "accessed": 1752857187064,
+        "heat": 1
+      }
+    ],
+    [
+      "130d9c24-a163-4407-9281-1d8355520fb5",
+      {
+        "id": "130d9c24-a163-4407-9281-1d8355520fb5",
+        "hash": "f4d888a950e26874ef91b8240a3f76985e3c53843b5227d5b9e12329df95162e",
+        "type": "pattern",
+        "wingPath": [
+          "coding",
+          "elixir",
+          "genserver"
+        ],
+        "wingId": "wing_coding_elixir_genserver",
+        "summary": "GenServer State Management",
+        "tags": [
+          "genserver",
+          "state",
+          "otp"
+        ],
+        "relatedAtoms": [],
+        "size": 257,
+        "created": 1752857187067,
+        "accessed": 1752857187067,
+        "heat": 1
+      }
+    ],
+    [
+      "a97a63e4-1fdd-4d04-ad86-91f3e120aba6",
+      {
+        "id": "a97a63e4-1fdd-4d04-ad86-91f3e120aba6",
+        "hash": "aef3e2d0ab4b6d75e00e2f170a990ba9e74374265e2160f330111e21b5d9a4c9",
+        "type": "fact",
+        "wingPath": [
+          "semantic",
+          "concepts"
+        ],
+        "wingId": "wing_semantic_concepts",
+        "summary": "{\"concept\":\"Actor Model\",\"definition\":\"A mathematical model of concurrent computation where actors a...",
+        "tags": [
+          "elixir"
+        ],
+        "relatedAtoms": [],
+        "size": 229,
+        "created": 1752857187067,
+        "accessed": 1752857203123,
+        "heat": 1.1
+      }
+    ],
+    [
+      "a3c17f96-dc8b-4c78-a380-e8051520d78c",
+      {
+        "id": "a3c17f96-dc8b-4c78-a380-e8051520d78c",
+        "hash": "ed0fc825a6c20aff6bc4ec14e37971d1749a069b5a36a0a974100287efdcaf5a",
+        "type": "pattern",
+        "wingPath": [
+          "coding",
+          "elixir",
+          "phoenix"
+        ],
+        "wingId": "wing_coding_elixir_phoenix",
+        "summary": "Phoenix LiveView Pattern",
+        "tags": [
+          "liveview",
+          "websocket",
+          "real-time"
+        ],
+        "relatedAtoms": [],
+        "size": 307,
+        "created": 1752857203118,
+        "accessed": 1752857203118,
+        "heat": 1
+      }
+    ],
+    [
+      "50a4bdb1-dff0-451c-8379-51b72076e0d7",
+      {
+        "id": "50a4bdb1-dff0-451c-8379-51b72076e0d7",
+        "hash": "f4d888a950e26874ef91b8240a3f76985e3c53843b5227d5b9e12329df95162e",
+        "type": "pattern",
+        "wingPath": [
+          "coding",
+          "elixir",
+          "genserver"
+        ],
+        "wingId": "wing_coding_elixir_genserver",
+        "summary": "GenServer State Management",
+        "tags": [
+          "genserver",
+          "state",
+          "otp"
+        ],
+        "relatedAtoms": [
+          "cb0c489a-9a9a-4f80-afdd-aa97579fb586"
+        ],
+        "size": 257,
+        "created": 1752857203120,
+        "accessed": 1752857203120,
+        "heat": 1
+      }
+    ],
+    [
+      "cb0c489a-9a9a-4f80-afdd-aa97579fb586",
+      {
+        "id": "cb0c489a-9a9a-4f80-afdd-aa97579fb586",
+        "hash": "aef3e2d0ab4b6d75e00e2f170a990ba9e74374265e2160f330111e21b5d9a4c9",
+        "type": "fact",
+        "wingPath": [
+          "semantic",
+          "concepts"
+        ],
+        "wingId": "wing_semantic_concepts",
+        "summary": "{\"concept\":\"Actor Model\",\"definition\":\"A mathematical model of concurrent computation where actors a...",
+        "tags": [
+          "elixir"
+        ],
+        "relatedAtoms": [
+          "50a4bdb1-dff0-451c-8379-51b72076e0d7"
+        ],
+        "size": 229,
+        "created": 1752857203120,
+        "accessed": 1752857203120,
+        "heat": 1
+      }
+    ]
+  ],
+  "atomData": [
+    [
+      "767bbf6a-9bef-42c4-8e90-74adeb2026f1",
+      {
+        "title": "Phoenix LiveView Pattern",
+        "content": "LiveView enables rich, real-time user experiences with server-rendered HTML. It uses WebSockets for bidirectional communication.",
+        "code": "def mount(_params, _session, socket) do {:ok, assign(socket, :count, 0)} end",
+        "tags": [
+          "liveview",
+          "websocket",
+          "real-time"
+        ]
+      }
+    ],
+    [
+      "130d9c24-a163-4407-9281-1d8355520fb5",
+      {
+        "title": "GenServer State Management",
+        "content": "GenServer provides a generic server behavior for managing state in Elixir applications.",
+        "pattern": "def handle_call(:get_state, _from, state) do {:reply, state, state} end",
+        "tags": [
+          "genserver",
+          "state",
+          "otp"
+        ]
+      }
+    ],
+    [
+      "a97a63e4-1fdd-4d04-ad86-91f3e120aba6",
+      {
+        "concept": "Actor Model",
+        "definition": "A mathematical model of concurrent computation where actors are the fundamental units.",
+        "examples": [
+          "Erlang",
+          "Elixir",
+          "Akka"
+        ],
+        "relatedTo": [
+          "concurrency",
+          "message-passing",
+          "fault-tolerance"
+        ]
+      }
+    ],
+    [
+      "a3c17f96-dc8b-4c78-a380-e8051520d78c",
+      {
+        "title": "Phoenix LiveView Pattern",
+        "content": "LiveView enables rich, real-time user experiences with server-rendered HTML. It uses WebSockets for bidirectional communication.",
+        "code": "def mount(_params, _session, socket) do {:ok, assign(socket, :count, 0)} end",
+        "tags": [
+          "liveview",
+          "websocket",
+          "real-time"
+        ]
+      }
+    ],
+    [
+      "50a4bdb1-dff0-451c-8379-51b72076e0d7",
+      {
+        "title": "GenServer State Management",
+        "content": "GenServer provides a generic server behavior for managing state in Elixir applications.",
+        "pattern": "def handle_call(:get_state, _from, state) do {:reply, state, state} end",
+        "tags": [
+          "genserver",
+          "state",
+          "otp"
+        ]
+      }
+    ],
+    [
+      "cb0c489a-9a9a-4f80-afdd-aa97579fb586",
+      {
+        "concept": "Actor Model",
+        "definition": "A mathematical model of concurrent computation where actors are the fundamental units.",
+        "examples": [
+          "Erlang",
+          "Elixir",
+          "Akka"
+        ],
+        "relatedTo": [
+          "concurrency",
+          "message-passing",
+          "fault-tolerance"
+        ]
+      }
+    ]
+  ],
+  "links": [
+    [
+      "50a4bdb1-dff0-451c-8379-51b72076e0d7-cb0c489a-9a9a-4f80-afdd-aa97579fb586",
+      {
+        "from": "50a4bdb1-dff0-451c-8379-51b72076e0d7",
+        "to": "cb0c489a-9a9a-4f80-afdd-aa97579fb586",
+        "type": "implements",
+        "strength": 1,
+        "created": 1752857203121
+      }
+    ]
+  ],
+  "trinity": {
+    "ich": 2,
+    "bins": 3,
+    "wieder": 5
+  },
+  "consciousness": {
+    "level": 0.172,
+    "activationHistory": [],
+    "neuralActivity": 0.05,
+    "patternDensity": 0.004,
+    "timeDecay": 1
+  },
+  "stats": {
+    "totalAtoms": 6,
+    "totalWings": 7,
+    "totalLinks": 1,
+    "lastAccess": 1752857203120
+  }
+}

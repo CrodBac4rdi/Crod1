@@ -1,0 +1,11 @@
+{application,crod_api,
+             [{modules,['Elixir.CROD.API.Application',
+                        'Elixir.CROD.API.REST.Handler',
+                        'Elixir.CROD.API.REST.Router']},
+              {optional_applications,[]},
+              {applications,[kernel,stdlib,elixir,logger,crod_core,
+                             plug_cowboy,cors_plug,jason]},
+              {description,"crod_api"},
+              {registered,[]},
+              {vsn,"0.1.0"},
+              {mod,{'Elixir.CROD.API.Application',[]}}]}.

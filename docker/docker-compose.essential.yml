@@ -1,0 +1,93 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: crod_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  crod:
+    build: 
+      context: ../../brain-implementations/elixir/crod-complete
+      dockerfile: Dockerfile.dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      MIX_ENV: dev
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/crod_dev
+      SECRET_KEY_BASE: "your-secret-key-base-at-least-64-chars-long-abcdefghijklmnopqrstuvwxyz0123456789"
+      PHX_HOST: localhost
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    volumes:
+      - ../../brain-implementations/elixir/crod-complete:/app:cached
+      - elixir_build:/app/_build
+      - elixir_deps:/app/deps
+      - elixir_node_modules:/app/assets/node_modules
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  crod-js:
+    build:
+      context: ../../brain-implementations/javascript
+      dockerfile: ../../infrastructure/docker/Dockerfile.js
+    environment:
+      NODE_ENV: development
+    ports:
+      - "8889:8888"
+    volumes:
+      - ../../brain-implementations/javascript:/app
+      - /app/node_modules
+    command: >
+      sh -c "
+        cd /app &&
+        npm install &&
+        node core/crod-brain.js
+      "
+
+  bridge:
+    build:
+      context: ../../brain-implementations/go-bridge
+      dockerfile: Dockerfile
+    depends_on:
+      crod:
+        condition: service_healthy
+    environment:
+      CROD_URL: "http://crod:4000/api/claude/process"
+      PORT: "9090"
+    ports:
+      - "9090:9090"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+  elixir_build:
+  elixir_deps:
+  elixir_node_modules:

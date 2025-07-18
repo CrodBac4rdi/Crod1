@@ -1,0 +1,32 @@
+{
+  "name": "crod-layered-atomic-memory",
+  "version": "2.0.0",
+  "description": "Multi-layer relational atomic memory system with pattern validation",
+  "license": "MIT",
+  "author": "CROD System",
+  "type": "module",
+  "bin": {
+    "mcp-server-memory": "dist/index.js",
+    "crod-layered-atomic": "dist/index-layered.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "start:layered": "node dist/index-layered.js",
+    "start:original": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.0.1",
+    "better-sqlite3": "^11.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/better-sqlite3": "^7.6.11",
+    "shx": "^0.3.4",
+    "typescript": "^5.6.2"
+  }
+}
